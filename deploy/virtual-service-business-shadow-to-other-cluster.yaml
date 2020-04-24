@@ -1,0 +1,22 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: service-business
+spec:
+  hosts:
+  - '*'
+  gateways:
+  - istio-system/ingressgateway
+  http:
+  - match:
+    - uri:
+        prefix: /service-business
+    route:
+    - destination:
+        host: service-business
+        port:
+          number: 80
+    mirror:
+      host: ${TEST_GATEWAY_URL} # replace by your testing-env gateway host
+    mirror_percent: 100
+

@@ -1,0 +1,88 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: service-business-v2
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-business
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: service-business
+        version: v2
+    spec:
+      containers:
+      - name: service-business
+        image: itmabo/service-business:v2
+        imagePullPolicy: Always
+        ports:
+        - name: main-port
+          containerPort: 8080
+        volumeMounts:
+        - mountPath: /home/log
+          name: log-volume
+        livenessProbe:
+          httpGet:
+            path: /service-business/actuator/info
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 3
+          successThreshold: 1
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /service-business/actuator/info
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 3
+          successThreshold: 1
+          failureThreshold: 5
+      volumes:
+      - name: log-volume
+        hostPath:
+          path: /home/log
+          type: DirectoryOrCreate
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-business
+  namespace: default
+  labels:
+    app: service-business
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: main-port
+  selector:
+    app: service-business
+  type: ClusterIP
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: service-shadow
+spec:
+  hosts:
+  - '*'
+  gateways:
+  - istio-system/ingressgateway
+  http:
+  - match:
+    - uri:
+        prefix: /service-shadow
+    rewrite:
+      uri: /service-business
+    route:
+    - destination:
+        host: service-business
+        port:
+          number: 80
