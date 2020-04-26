@@ -78,9 +78,7 @@ spec:
   http:
   - match:
     - uri:
-        prefix: /service-shadow
-    rewrite:
-      uri: /service-business
+        prefix: /service-business
     route:
     - destination:
         host: service-business
