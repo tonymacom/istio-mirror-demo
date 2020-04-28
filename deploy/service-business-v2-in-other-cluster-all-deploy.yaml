@@ -29,7 +29,7 @@ spec:
           httpGet:
             path: /service-business/actuator/info
             port: 8080
-          initialDelaySeconds: 30
+          initialDelaySeconds: 10
           periodSeconds: 3
           successThreshold: 1
           failureThreshold: 5
@@ -37,7 +37,7 @@ spec:
           httpGet:
             path: /service-business/actuator/info
             port: 8080
-          initialDelaySeconds: 30
+          initialDelaySeconds: 10
           periodSeconds: 3
           successThreshold: 1
           failureThreshold: 5
