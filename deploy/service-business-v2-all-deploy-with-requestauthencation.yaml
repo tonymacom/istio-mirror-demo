@@ -1,3 +1,9 @@
+# service-business-v2 authentication with jwt
+# use following command
+# export GATEWAY_URL=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+# curl ${GATEWAY_URL}/service-business/request/info -H "Authorization: Bearer invalidToken" -D -
+# TOKEN=$(curl https://raw.githubusercontent.com/istio/istio/release-1.5/security/tools/jwt/samples/demo.jwt -s) && echo $TOKEN | cut -d '.' -f2 - | base64 --decode -
+# curl ${GATEWAY_URL}/service-business/request/info -H "Authorization: Bearer $TOKEN" -D -
 
 ---
 apiVersion: apps/v1
@@ -63,10 +69,8 @@ spec:
     protocol: TCP
     targetPort: main-port
   selector:
-    app: service-business
-    
+    app: service-business 
 ---
-
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -79,10 +83,8 @@ spec:
   http:
   - route:
     - destination:
-        host: service-business
-        
+        host: service-business     
 ---
-
 apiVersion: "security.istio.io/v1beta1"
 kind: "RequestAuthentication"
 metadata:
